@@ -1,0 +1,74 @@
+<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'>
+<System>
+<Provider Name='Microsoft-Windows-Sysmon' Guid='{5770385f-c22a-43e0-bf4c-06f5698ffbd9}'/>
+<EventID>1</EventID>
+<Version>5</Version>
+<Level>4</Level>
+<Task>1</Task>
+<Opcode>0</Opcode>
+<Keywords>0x8000000000000000</Keywords>
+<TimeCreated SystemTime='2021-01-13T19:38:50.2516067Z'/>
+<EventRecordID>5588</EventRecordID>
+<Correlation/>
+<Execution ProcessID='3760' ThreadID='4440'/>
+<Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+<Computer>DESKTOP-JHRFE63</Computer>
+<Security UserID='S-1-5-18'/>
+</System>
+<EventData>
+<Data Name='RuleName'>-</Data>
+<Data Name='UtcTime'>2021-01-13 19:38:50.249</Data>
+<Data Name='ProcessGuid'>{2b1c80fa-4c4a-5fff-e700-000000000c00}</Data>
+<Data Name='ProcessId'>692</Data>
+<Data Name='Image'>C:\Windows\System32\taskhostw.exe</Data>
+<Data Name='FileVersion'>10.0.19041.662 (WinBuild.160101.0800)</Data>
+<Data Name='Description'>Host Process for Windows Tasks</Data>
+<Data Name='Product'>Microsoft® Windows® Operating System</Data>
+<Data Name='Company'>Microsoft Corporation</Data>
+<Data Name='OriginalFileName'>taskhostw.exe</Data>
+<Data Name='CommandLine'>taskhostw.exe</Data>
+<Data Name='CurrentDirectory'>C:\Windows\system32\</Data>
+<Data Name='User'>NT AUTHORITY\SYSTEM</Data>
+<Data Name='LogonGuid'>{2b1c80fa-4b05-5fff-e703-000000000000}</Data>
+<Data Name='LogonId'>0x3e7</Data>
+<Data Name='TerminalSessionId'>0</Data>
+<Data Name='IntegrityLevel'>System</Data>
+<Data Name='Hashes'>SHA256=59C34F131DCEDCC34252D2AB18754481843EFB2A64A92996391330C321154943</Data>
+<Data Name='ParentProcessGuid'>{2b1c80fa-4b06-5fff-1c00-000000000c00}</Data>
+<Data Name='ParentProcessId'>1336</Data>
+<Data Name='ParentImage'>C:\Windows\System32\svchost.exe</Data>
+<Data Name='ParentCommandLine'>C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule</Data>
+</EventData>
+<RenderingInfo Culture='en-US'>
+<Message>Process Create:
+RuleName: -
+UtcTime: 2021-01-13 19:38:50.249
+ProcessGuid: {2b1c80fa-4c4a-5fff-e700-000000000c00}
+ProcessId: 692
+Image: C:\Windows\System32\taskhostw.exe
+FileVersion: 10.0.19041.662 (WinBuild.160101.0800)
+Description: Host Process for Windows Tasks
+Product: Microsoft® Windows® Operating System
+Company: Microsoft Corporation
+OriginalFileName: taskhostw.exe
+CommandLine: taskhostw.exe
+CurrentDirectory: C:\Windows\system32\
+User: NT AUTHORITY\SYSTEM
+LogonGuid: {2b1c80fa-4b05-5fff-e703-000000000000}
+LogonId: 0x3E7
+TerminalSessionId: 0
+IntegrityLevel: System
+Hashes: SHA256=59C34F131DCEDCC34252D2AB18754481843EFB2A64A92996391330C321154943
+ParentProcessGuid: {2b1c80fa-4b06-5fff-1c00-000000000c00}
+ParentProcessId: 1336
+ParentImage: C:\Windows\System32\svchost.exe
+ParentCommandLine: C:\Windows\system32\svchost.exe -k netsvcs -p -s Schedule
+</Message>
+<Level>Information</Level>
+<Task>Process Create (rule: ProcessCreate)</Task>
+<Opcode>Info</Opcode>
+<Channel></Channel>
+<Provider></Provider>
+<Keywords></Keywords>
+</RenderingInfo>
+</Event>
