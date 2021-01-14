@@ -10,47 +10,75 @@ class App:
     def close(self):
         self.driver.close()
     
-    def proc_start(self, procname, procid):
+    def proc_start(self, data):
         with self.driver.session() as session:
-            result = session.write_transaction(self._create_proc_node, procname, procid)
+            result = session.write_transaction(self._create_proc_node, data)
             for row in result:
-                print(f'Node {procname} was created')
+                print(f'Node {data["OriginalFileName"]} was created')
         
     @staticmethod
-    def _create_proc_node(tx, procname,procid):
-        query = ("CREATE (n1:Process { procname: $procname, procid: $procid})"
+    def _create_proc_node(tx,data):
+        query = ("CREATE (n1:Process { UtcTime: $UtcTime,ProcessGuid: $ProcessGuid,ProcessId: $ProcessId,Image: $Image,FileVersion: $FileVersion,Description: $Description,Product: $Product,Company: $Company,OriginalFileName: $OriginalFileName,CommandLine: $CommandLine,CurrentDirectory: $CurrentDirectory,User: $User,LogonGuid: $LogonGuid,LogonId: $LogonId, TerminalSessionId: $TerminalSessionId, IntegrityLevel: $IntegrityLevel, Hashes: $Hashes, ParentProcessGuid: $ParentProcessGuid, ParentProcessId: $ParentProcessId, ParentImage: $ParentImage, ParentCommandLine: $ParentCommandLine})"
                 "RETURN n1")
-        result = tx.run(query, procname=procname, procid=procid)
+        result = tx.run(query, UtcTime=data["UtcTime"],ProcessGuid=data["ProcessGuid"],ProcessId=data["ProcessId"],Image=data["Image"],FileVersion=data["FileVersion"],Description=data["Description"],Product=data["Product"],Company=data["Company"],OriginalFileName=data["OriginalFileName"],CommandLine=data["CommandLine"],CurrentDirectory=data["CurrentDirectory"],User=data["User"],LogonGuid=data["LogonGuid"],LogonId=data["LogonId"], TerminalSessionId=data["TerminalSessionId"], IntegrityLevel=data["IntegrityLevel"], Hashes=data["Hashes"], ParentProcessGuid=data["ParentProcessGuid"], ParentProcessId=data["ParentProcessId"], ParentImage=data["ParentImage"], ParentCommandLine=data["ParentCommandLine"])
         try:
             return [{"n1": row["n1"]["procid"]} for row in result]        
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
             query=query, exception=exception))
             raise
-
+    
+    def create_relationship(self, data):
+        with self.driver.session() as session:
+            a = data
+            result = session.write_transaction(self._create_relationship, a)
+            for row in result:
+                print("Relationship made")
+                #print(f'Reationship was created from parent{data["ParentImage"]} to child {data["Image"]}')
+    @staticmethod
+    def _create_relationship(tx, procid):
+        query = (
+                "MATCH (child:Process) WHERE child.ParentProcessId = $procid "
+"MATCH (parent:Process) WHERE parent.ProcessId = $procid "
+"CREATE (parent)-[:Spawns]->(child) "
+"Return child, parent"
+                )
+        result = tx.run(query, procid=procid)
+        try:
+            return [{"child": row["child"]["procid"],"parent": row["parent"]["procid"]} for row in result]        
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+            query=query, exception=exception))
+            raise
 if __name__ == "__main__":
-    root = ET.parse('test1.xml').getroot()
+    events = ET.parse('test1.xml').getroot()
     app = App("bolt://localhost:7687", "neo4j", "sysmon")
-    app.proc_start("crss.exe", "2")
+    for event in events:
+        data = {}
+        data["UtcTime"] = event[1][1].text
+        data["ProcessGuid"] = event[1][2].text
+        data["ProcessId"] = event[1][3].text
+        data["Image"] = event[1][4].text
+        data["FileVersion"] = event[1][5].text
+        data["Description"] = event[1][6].text
+        data["Product"] = event[1][7].text
+        data["Company"] = event[1][8].text
+        data["OriginalFileName"] = event[1][9].text
+        data["CommandLine"] = event[1][10].text
+        data["CurrentDirectory"] = event[1][11].text
+        data["User"] = event[1][12].text
+        data["LogonGuid"] = event[1][13].text
+        data["LogonId"] = event[1][14].text
+        data["TerminalSessionId"] = event[1][15].text
+        data["IntegrityLevel"] = event[1][16].text
+        data["Hashes"] = event[1][17].text
+        data["ParentProcessGuid"] = event[1][18].text
+        data["ParentProcessId"] = event[1][19].text
+        data["ParentImage"] = event[1][20].text
+        data["ParentCommandLine"] = event[1][21].text
+        app.proc_start(data)
+    for event in events:
+        data = event[1][19].text
+        app.create_relationship(data)
     app.close()
-    UtcTime = root[1][1].text
-    ProcessGuid = root[1][2].text
-    ProcessId = root[1][3].text
-    Image = root[1][4].text
-    FileVersion = root[1][5].text
-    Description = root[1][6].text
-    Product = root[1][7].text
-    Company = root[1][8].text
-    OriginalFileName = root[1][9].text
-    CommandLine = root[1][10].text
-    CurrentDirectory = root[1][11].text
-    User = root[1][12].text
-    LogonGuid = root[1][13].text
-    LogonId = root[1][14].text
-    TerminalSessionId= root[1][15].text
-    IntegrityLevel = root[1][16].text
-    Hashes = root[1][17].text
-    ParentProcessGuid = root[1][18].text
-    ParentProcessId = root[1][19].text
-    ParentImage = root[1][20].text
-    ParentCommandLine = root[1][21].text
+
