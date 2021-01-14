@@ -30,8 +30,7 @@ class App:
     
     def create_relationship(self, data):
         with self.driver.session() as session:
-            a = data
-            result = session.write_transaction(self._create_relationship, a)
+            result = session.write_transaction(self._create_relationship, data)
             for row in result:
                 print("Relationship made")
                 #print(f'Reationship was created from parent{data["ParentImage"]} to child {data["Image"]}')
@@ -39,9 +38,9 @@ class App:
     def _create_relationship(tx, procid):
         query = (
                 "MATCH (child:Process) WHERE child.ParentProcessId = $procid "
-"MATCH (parent:Process) WHERE parent.ProcessId = $procid "
-"CREATE (parent)-[:Spawns]->(child) "
-"Return child, parent"
+                "MATCH (parent:Process) WHERE parent.ProcessId = $procid "
+                "CREATE (parent)-[:Spawns]->(child) "
+                "Return child, parent"
                 )
         result = tx.run(query, procid=procid)
         try:
@@ -51,34 +50,42 @@ class App:
             query=query, exception=exception))
             raise
 if __name__ == "__main__":
-    events = ET.parse('test1.xml').getroot()
+    events = ET.parse('sysmon.xml').getroot()
     app = App("bolt://localhost:7687", "neo4j", "sysmon")
+    x = 1
     for event in events:
-        data = {}
-        data["UtcTime"] = event[1][1].text
-        data["ProcessGuid"] = event[1][2].text
-        data["ProcessId"] = event[1][3].text
-        data["Image"] = event[1][4].text
-        data["FileVersion"] = event[1][5].text
-        data["Description"] = event[1][6].text
-        data["Product"] = event[1][7].text
-        data["Company"] = event[1][8].text
-        data["OriginalFileName"] = event[1][9].text
-        data["CommandLine"] = event[1][10].text
-        data["CurrentDirectory"] = event[1][11].text
-        data["User"] = event[1][12].text
-        data["LogonGuid"] = event[1][13].text
-        data["LogonId"] = event[1][14].text
-        data["TerminalSessionId"] = event[1][15].text
-        data["IntegrityLevel"] = event[1][16].text
-        data["Hashes"] = event[1][17].text
-        data["ParentProcessGuid"] = event[1][18].text
-        data["ParentProcessId"] = event[1][19].text
-        data["ParentImage"] = event[1][20].text
-        data["ParentCommandLine"] = event[1][21].text
-        app.proc_start(data)
+        if event[0][1].text == "1":
+            data = {}
+            data["UtcTime"] = event[1][1].text
+            data["ProcessGuid"] = event[1][2].text
+            data["ProcessId"] = event[1][3].text
+            data["Image"] = event[1][4].text
+            data["FileVersion"] = event[1][5].text
+            data["Description"] = event[1][6].text
+            data["Product"] = event[1][7].text
+            data["Company"] = event[1][8].text
+            data["OriginalFileName"] = event[1][9].text
+            data["CommandLine"] = event[1][10].text
+            data["CurrentDirectory"] = event[1][11].text
+            data["User"] = event[1][12].text
+            data["LogonGuid"] = event[1][13].text
+            data["LogonId"] = event[1][14].text
+            data["TerminalSessionId"] = event[1][15].text
+            data["IntegrityLevel"] = event[1][16].text
+            data["Hashes"] = event[1][17].text
+            data["ParentProcessGuid"] = event[1][18].text
+            data["ParentProcessId"] = event[1][19].text
+            data["ParentImage"] = event[1][20].text
+            data["ParentCommandLine"] = event[1][21].text
+            app.proc_start(data)
+            print(x)
+            x += 1
+    y = 0
     for event in events:
-        data = event[1][19].text
-        app.create_relationship(data)
+        if event[0][1].text == "1":
+            data = event[1][19].text
+            app.create_relationship(data)
+            print(y)
+            y += 1
     app.close()
 
