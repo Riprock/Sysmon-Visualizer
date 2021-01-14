@@ -35,14 +35,14 @@ class App:
                 print("Relationship made")
                 #print(f'Reationship was created from parent{data["ParentImage"]} to child {data["Image"]}')
     @staticmethod
-    def _create_relationship(tx, procid):
+    def _create_relationship(tx, procguid):
         query = (
-                "MATCH (child:Process) WHERE child.ParentProcessId = $procid "
-                "MATCH (parent:Process) WHERE parent.ProcessId = $procid "
+               "MATCH (child:Process) WHERE child.ParentProcessGuid = $procguid "
+                "MATCH (parent:Process) WHERE parent.ProcessGuid = $procguid "
                 "CREATE (parent)-[:Spawns]->(child) "
                 "Return child, parent"
                 )
-        result = tx.run(query, procid=procid)
+        result = tx.run(query, procguid=procguid)
         try:
             return [{"child": row["child"]["procid"],"parent": row["parent"]["procid"]} for row in result]        
         except ServiceUnavailable as exception:
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         if event[0][1].text == "1":
             data = {}
             data["UtcTime"] = event[1][1].text
-            data["ProcessGuid"] = event[1][2].text
+            data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
             data["ProcessId"] = event[1][3].text
             data["Image"] = event[1][4].text
             data["FileVersion"] = event[1][5].text
@@ -73,7 +73,7 @@ if __name__ == "__main__":
             data["TerminalSessionId"] = event[1][15].text
             data["IntegrityLevel"] = event[1][16].text
             data["Hashes"] = event[1][17].text
-            data["ParentProcessGuid"] = event[1][18].text
+            data["ParentProcessGuid"] = event[1][18].text.replace("{","").replace("}","")
             data["ParentProcessId"] = event[1][19].text
             data["ParentImage"] = event[1][20].text
             data["ParentCommandLine"] = event[1][21].text
@@ -81,11 +81,12 @@ if __name__ == "__main__":
             print(x)
             x += 1
     y = 0
-    for event in events:
-        if event[0][1].text == "1":
-            data = event[1][19].text
-            app.create_relationship(data)
-            print(y)
-            y += 1
+    while y != 15:
+        for event in events:
+            if event[0][1].text == "1":
+                data = event[1][18].text.replace("{","").replace("}","")
+                app.create_relationship(data)
+                print(y)
+                y += 1
     app.close()
 
