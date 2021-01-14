@@ -81,12 +81,11 @@ if __name__ == "__main__":
             print(x)
             x += 1
     y = 0
-    while y != 15:
-        for event in events:
-            if event[0][1].text == "1":
-                data = event[1][18].text.replace("{","").replace("}","")
-                app.create_relationship(data)
-                print(y)
-                y += 1
+    for event in events:
+        if event[0][1].text == "1":
+            data = event[1][18].text.replace("{","").replace("}","")
+            app.create_relationship(data)
+            print(y)
+            y += 1
     app.close()
 
