@@ -33,7 +33,9 @@ class App:
             result = session.write_transaction(self._create_relationship, data)
             for row in result:
                 print("Relationship made")
+                print(row)
                 #print(f'Reationship was created from parent{data["ParentImage"]} to child {data["Image"]}')
+
     @staticmethod
     def _create_relationship(tx, procguid):
         query = (
@@ -44,13 +46,13 @@ class App:
                 )
         result = tx.run(query, procguid=procguid)
         try:
-            return [{"child": row["child"]["procid"],"parent": row["parent"]["procid"]} for row in result]        
+            return [{"child": row["child"],"parent": row["parent"]} for row in result]        
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
             query=query, exception=exception))
             raise
 if __name__ == "__main__":
-    events = ET.parse('sysmon.xml').getroot()
+    events = ET.parse('test3.xml').getroot()
     app = App("bolt://localhost:7687", "neo4j", "sysmon")
     x = 1
     for event in events:
@@ -60,7 +62,7 @@ if __name__ == "__main__":
             data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
             data["ProcessId"] = event[1][3].text
             data["Image"] = event[1][4].text
-            data["FileVersion"] = event[1][5].text
+            data["FileVersion"] = event[1][5].text  
             data["Description"] = event[1][6].text
             data["Product"] = event[1][7].text
             data["Company"] = event[1][8].text
@@ -80,12 +82,17 @@ if __name__ == "__main__":
             app.proc_start(data)
             print(x)
             x += 1
-    y = 0
-    for event in events:
-        if event[0][1].text == "1":
-            data = event[1][18].text.replace("{","").replace("}","")
-            app.create_relationship(data)
-            print(y)
-            y += 1
+
+    data = events[0][1][18].text.replace("{","").replace("}","")
+    app.create_relationship(data)
+#    y = 0
+#    for event in events:
+#        created = False
+#        if event[0][1].text == "1":
+#            data = event[1][18].text.replace("{","").replace("}","")
+#            app.create_relationship(data)
+#            created = True
+#            print(y)
+#            y += 1
     app.close()
 
