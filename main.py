@@ -10,11 +10,11 @@ class App:
     def close(self):
         self.driver.close()
     
-    def proc_start(self, data):
+    def proc_start(self, data, num):
         with self.driver.session() as session:
             result = session.write_transaction(self._create_proc_node, data)
             for row in result:
-                print(f'Node {data["OriginalFileName"]} was created')
+                print(f'Node {data["OriginalFileName"]} was created #{num}')
         
     @staticmethod
     def _create_proc_node(tx,data):
@@ -33,7 +33,7 @@ class App:
             result = session.write_transaction(self._create_relationship, data)
             for row in result:
                 print("Relationship made")
-                print(row)
+                #print(row)
                 #print(f'Reationship was created from parent{data["ParentImage"]} to child {data["Image"]}')
 
     @staticmethod
@@ -52,7 +52,7 @@ class App:
             query=query, exception=exception))
             raise
 if __name__ == "__main__":
-    events = ET.parse('test3.xml').getroot()
+    events = ET.parse('sysmon.xml').getroot()
     app = App("bolt://localhost:7687", "neo4j", "sysmon")
     x = 1
     for event in events:
@@ -79,12 +79,11 @@ if __name__ == "__main__":
             data["ParentProcessId"] = event[1][19].text
             data["ParentImage"] = event[1][20].text
             data["ParentCommandLine"] = event[1][21].text
-            app.proc_start(data)
-            print(x)
+            app.proc_start(data, x)
             x += 1
-
-    data = events[0][1][18].text.replace("{","").replace("}","")
-    app.create_relationship(data)
+    if events[0][0][1].text == "1":
+        data = events[0][1][18].text.replace("{","").replace("}","")
+        app.create_relationship(data)
 #    y = 0
 #    for event in events:
 #        created = False
