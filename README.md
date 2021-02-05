@@ -1,7 +1,6 @@
 # Sysmon-Visualizer
-This takes sysmon data and visualizes process trees. Made with Neo4j
+This takes sysmon logs and builds a process tree in Neo4j.
 
-Quick side note for next time I work on this
-Each Child should only have one relationship
-A parent can have multiple relationships to children but a child can have only one relationship to a parent
-This should fix the issue I was encountering earlier
+Usage of this tool is to build process spawning trees. Currently you have to export the operational log from sysmon as an xml file and then dump that file into the tool
+
+Usage of this Requires neo4j in order for usage. Going to automate the creation of sysmon project db in neo4j
