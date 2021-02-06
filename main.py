@@ -2,6 +2,7 @@ from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
 import logging
 import xml.etree.ElementTree as ET
+import sys
 
 class App:
     def __init__(self, url, user, password):
@@ -51,9 +52,26 @@ class App:
             logging.error("{query} raised an error: \n {exception}".format(
             query=query, exception=exception))
             raise
-if __name__ == "__main__":
-    events = ET.parse('sysmon.xml').getroot()
-    app = App("bolt://localhost:7687", "neo4j", "sysmon")
+
+def create_termination_nd(self, data):
+    with self.driver.session() as session:
+        result = session.write_transaction(self._create_termination_nd, data)
+        for row in result:
+            print(f'Termination Time was marked')
+
+@staticmethod
+def _create_termination_nd(tx, )
+    query = ("CREATE (n1:Process { UtcTime: $UtcTime,ProcessGuid: $ProcessGuid,ProcessId: $ProcessId,Image: $Image})"
+                "RETURN n1")
+    result = tx.run(query, UtcTime=data["UtcTime"],ProcessGuid=data["ProcessGuid"],ProcessId=data["ProcessId"],Image=data["Image"])
+    try:
+        return [{"n1": row["n1"]["procid"]} for row in result]        
+    except ServiceUnavailable as exception:
+        logging.error("{query} raised an error: \n {exception}".format(
+        query=query, exception=exception))
+        raise
+
+def create(app):
     x = 1
     for event in events:
         if event[0][1].text == "1":
@@ -81,17 +99,31 @@ if __name__ == "__main__":
             data["ParentCommandLine"] = event[1][21].text
             app.proc_start(data, x)
             x += 1
-    if events[0][0][1].text == "1":
-        data = events[0][1][18].text.replace("{","").replace("}","")
+def relate(app):
+    guid = []
+    for event in events:
+        if event[0][1].text == "1":
+            procguid = event[1][18].text.replace("{","").replace("}","")
+            if procguid not in guid:
+                guid.append(procguid)
+                print(f'Added Guid {procguid}')
+    for data in guid:
         app.create_relationship(data)
-#    y = 0
-#    for event in events:
-#        created = False
-#        if event[0][1].text == "1":
-#            data = event[1][18].text.replace("{","").replace("}","")
-#            app.create_relationship(data)
-#            created = True
-#            print(y)
-#            y += 1
+
+def terminations(app):
+    for event in events:
+        data = {}
+        if event[0][1].text == "5":
+            data["UtcTime"] = event[1][1].text
+            data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
+            data["ProcessId"] = event[1][3].text
+            data["Image"] = event[1][4].text
+
+if __name__ == "__main__":
+    sysxml = sys.argv[1]
+    events = ET.parse('sysmon.xml').getroot()
+    app = App("bolt://localhost:7687", "neo4j", "sysmon")
+    create(app)
+    relate(app)
     app.close()
 
