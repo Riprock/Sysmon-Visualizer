@@ -60,7 +60,7 @@ def create_termination_nd(self, data):
             print(f'Termination Time was marked')
 
 @staticmethod
-def _create_termination_nd(tx, )
+def _create_termination_nd(tx, ):
     query = ("CREATE (n1:Process { UtcTime: $UtcTime,ProcessGuid: $ProcessGuid,ProcessId: $ProcessId,Image: $Image})"
                 "RETURN n1")
     result = tx.run(query, UtcTime=data["UtcTime"],ProcessGuid=data["ProcessGuid"],ProcessId=data["ProcessId"],Image=data["Image"])
@@ -99,6 +99,7 @@ def create(app):
             data["ParentCommandLine"] = event[1][21].text
             app.proc_start(data, x)
             x += 1
+            
 def relate(app):
     guid = []
     for event in events:
