@@ -59,7 +59,15 @@ def netcon(event,data):
 
 
 #This is Event ID 4
-#This is Event ID 5
+
+def procterm(event, data):
+    #This is Event ID 5
+    data["UtcTime"] = event[1][1].text
+    data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
+    data["ProcessId"] = event[1][3].text
+    data["Image"] = event[1][4].text
+    data["User"] = event[1][5].text
+    
 #This is Event ID 6
 #This is Event ID 7
 #This is Event ID 8
@@ -77,6 +85,7 @@ def netcon(event,data):
 #This is Event ID 20
 #This is Event ID 21
 def dnsQuery(event,data):
+    #This is Event ID 22
     data["UtcTime"] = event[1][1].text
     data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
     data["ProcessId"] = event[1][3]
@@ -86,7 +95,7 @@ def dnsQuery(event,data):
     data["Image"] = event[1][7]
     data["User"] = event[1][8]
 
-    #This is Event ID 22
+    
 #This is Event ID 23
 #This is Event ID 24
 #This is Event ID 25
