@@ -1,10 +1,61 @@
-def main(): 
+def main(events): 
     x = 1
     for event in events:
+        data = {}
         if event[0][1].text == "1":
-            data = {}
-            proccreate(event,data)
-def proccreate(event, data):
+            proccreate(event,data,x)
+        if event[0][1].text == "2":
+            procfiletime(event,data,x)
+        if event[0][1].text == "3":
+            netcon(event,data,x)
+        if event[0][1].text == "4":
+            pass
+        if event[0][1].text == "5":
+            pass
+        if event[0][1].text == "6":
+            pass
+        if event[0][1].text == "7":
+            pass
+        if event[0][1].text == "8":
+            pass
+        if event[0][1].text == "9":
+            pass
+        if event[0][1].text == "10":
+            pass
+        if event[0][1].text == "11":
+            pass
+        if event[0][1].text == "12":
+            regevnt(event,data,x)
+        if event[0][1].text == "13":
+            pass
+        if event[0][1].text == "14":
+            pass
+        if event[0][1].text == "15":
+            pass
+        if event[0][1].text == "16":
+            pass
+        if event[0][1].text == "17":
+            pass
+        if event[0][1].text == "18":
+            pass
+        if event[0][1].text == "19":
+            pass
+        if event[0][1].text == "20":
+            pass
+        if event[0][1].text == "21":
+            pass
+        if event[0][1].text == "22":
+            dnsQuery(event,data,x)
+        if event[0][1].text == "23":
+            pass
+        if event[0][1].text == "24":
+            pass
+        if event[0][1].text == "25":
+            pass
+        if event[0][1].text == "26":
+            pass
+                
+def proccreate(event, data,x):
     #This is Event ID 1
     data["UtcTime"] = event[1][1].text
     data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
@@ -27,17 +78,16 @@ def proccreate(event, data):
     data["ParentProcessId"] = event[1][19].text
     data["ParentImage"] = event[1][20].text
     data["ParentCommandLine"] = event[1][21].text
-    app.proc_start(data, x)
     x += 1
 
-def procfiletime(event,data):
+def procfiletime(event,data,x):
     #This is Event ID 2
     data["UtcTime"] = event[1][1].text
     data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
     data["ProcessId"] = event[1][3].text
     data["Image"] = event[1][4].text
 
-def netcon(event,data):
+def netcon(event,data,x):
     #This is Event ID 3
     data["UtcTime"] = event[1][1].text
     data["ProcessGuid"] = event[1][2].text
@@ -74,7 +124,16 @@ def procterm(event, data):
 #This is Event ID 9
 #This is Event ID 10
 #This is Event ID 11
-#This is Event ID 12
+def regevnt(event,data,x):
+    #This is Event ID 12
+    data["UtcTime"] = event[1][1].text
+    data["EventType"] = event[1][2].text
+    data["ProcessGuid"] = event[1][3].text.replace("{","").replace("}","")
+    data["ProcessId"] = event[1][4].text
+    data["Image"] = event[1][5].text
+    data["TargetObject"] = event[1][6].text
+    data["User"] = event[1][7].text
+
 #This is Event ID 13
 #This is Event ID 14
 #This is Event ID 15
@@ -84,7 +143,7 @@ def procterm(event, data):
 #This is Event ID 19
 #This is Event ID 20
 #This is Event ID 21
-def dnsQuery(event,data):
+def dnsQuery(event,data,x):
     #This is Event ID 22
     data["UtcTime"] = event[1][1].text
     data["ProcessGuid"] = event[1][2].text.replace("{","").replace("}","")
